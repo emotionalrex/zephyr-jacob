@@ -48,3 +48,16 @@ big_lob_aque <- lobster_abundance %>%
   filter(SIZE_MM >= "70")
 ```
 
+## Exercise: Data Visualization
+
+```{r}
+lobsters_summarize <- lobster_abundance %>% 
+  group_by(SITE, YEAR) %>% 
+  summarize(COUNT = n())
+
+ggplot(lobsters_summarize, aes(x = YEAR, y = COUNT, color = SITE))+
+  geom_point()
+
+ggsave("../figs/zeph_count_year.png")
+```
+
