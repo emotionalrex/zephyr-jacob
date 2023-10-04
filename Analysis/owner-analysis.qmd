@@ -58,6 +58,36 @@ lobsters_summarize <- lobster_abundance %>%
 ggplot(lobsters_summarize, aes(x = YEAR, y = COUNT, color = SITE))+
   geom_point()
 
-ggsave("../figs/zeph_count_year.png")
+ggsave("../figs/zeph_count_year.png", plot = last_plot(), width = 6, height = 4, units = "in")
+
+ggplot(lobsters_summarize, aes(x = YEAR, y = COUNT))+
+  geom_line(aes(color = SITE))
+
+ggsave("../figs/zephyr_line_count_year.png", width = 6, height = 4, units = "in")
+```
+
+```{r}
+ggplot(lobster_abundance, aes(x = SIZE_MM))+
+  geom_histogram()+
+  facet_wrap("SITE")
+
+ggsave("../figs/zeph_histogram.png", width = 6, height = 4, units = "in")
+ 
+```
+
+```{r}
+#| warning: false
+#| message: false
+lobster_size_large <- lobster_abundance %>% 
+  filter(YEAR %in% c(2019, 2020, 2021)) %>% 
+  mutate(SIZE_BIN = if_else(SIZE_MM <= 70, true = "small", false = "large")) %>% 
+  group_by(SITE, SIZE_BIN) %>% 
+  summarize(COUNT = n()) %>% 
+  drop_na()
+glimpse(lobster_size_large)
+
+ggplot(lobster_size_large, aes(x = SITE, y = COUNT, fill = SIZE_BIN))+
+  geom_col(position = "dodge")
+ggsave("../figs/zeph_barplot.png", width = 6, height = 4, units = "in")
 ```
 
