@@ -23,3 +23,20 @@ colnames(lobster_traps)
 summary(lobster_traps)
 ```
 
+### Converting missing values using `mutate()` and `na_if()`.
+```{r}
+unique(lobster_traps$TRAPS)
+lobster_traps_conv <- lobster_traps %>%
+  mutate(TRAPS = na_if(TRAPS, -99999))
+unique(lobster_traps_conv$TRAPS)
+```
+
+### Practicing `filter()`.
+```{r}
+lobster_traps_notnapl <- lobster_traps_conv %>%
+  filter(SITE != "NAPL")
+
+lobster_traps_carptrap <- lobster_traps_conv %>%
+  filter(SITE == "CARP" | TRAPS > 20)
+```
+
