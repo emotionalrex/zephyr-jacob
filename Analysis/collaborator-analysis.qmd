@@ -26,17 +26,54 @@ summary(lobster_traps)
 ### Converting missing values using `mutate()` and `na_if()`.
 ```{r}
 unique(lobster_traps$TRAPS)
-lobster_traps_conv <- lobster_traps %>%
+lobster_traps <- lobster_traps %>%
   mutate(TRAPS = na_if(TRAPS, -99999))
-unique(lobster_traps_conv$TRAPS)
+unique(lobster_traps$TRAPS)
 ```
 
 ### Practicing `filter()`.
 ```{r}
-lobster_traps_notnapl <- lobster_traps_conv %>%
+lobster_traps_notnapl <- lobster_traps %>%
   filter(SITE != "NAPL")
 
-lobster_traps_carptrap <- lobster_traps_conv %>%
+lobster_traps_carptrap <- lobster_traps %>%
   filter(SITE == "CARP" | TRAPS > 20)
+```
+
+## Exercise: Data Visualization
+```{r}
+ggplot(data = lobster_traps, aes(x = TRAPS)) +
+  geom_histogram() +
+  facet_wrap( ~YEAR)
+
+ggsave("../figs/lobster-trap-hist.png", width = 6, height = 4, units = "in")
+
+lobster_traps_summarize <- lobster_traps %>%
+  group_by(SITE, YEAR) %>%
+  summarize(TOTAL_TRAPS = sum(TRAPS, na.rm = TRUE)) %>%
+  mutate(SITE = if_else(SITE %in% "AHND to AQUE", "AHND TO AQUE", SITE))
+  
+
+ggplot(data = lobster_traps_summarize, 
+       aes(x = YEAR,
+           y = TOTAL_TRAPS)) +
+  geom_line(aes(color = SITE)) + 
+  geom_point()
+ggsave("../figs/lobster-trap-line.png", width = 6, height = 4, units = "in")
+
+lobster_traps_fishing_pressure <- lobster_traps %>%
+  filter(YEAR %in% c("2019", "2020", "2021")) %>%
+  mutate(FISHING_PRESSURE = if_else(TRAPS < 8, "LOW", "HIGH")) %>%
+  group_by(SITE, FISHING_PRESSURE) %>%
+  summarise(COUNT = n()) %>%
+  drop_na()
+
+ggplot(lobster_traps_fishing_pressure,
+       aes(y = SITE,
+           x = COUNT,
+           fill = FISHING_PRESSURE)) +
+  geom_col(position = "dodge")
+ggsave("../figs/lobster-trap-col.png", width = 6, height = 4, units = "in")
+
 ```
 
