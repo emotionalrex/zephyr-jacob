@@ -1,25 +1,42 @@
 ---
 title: "Collaborator Analysis"
 format: html
+author: Jacob Schmidt
 ---
 
-## Quarto
-
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+## Exercise: Explore, Clean, and Wrangle Data
 
 ```{r}
-1 + 1
+# Loading in relevant libraries.
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+# Loading in the Lobster Traps dataset.
+lobster_traps <- read_csv("../data/Lobster_Trap_Counts_All_Years_20210519.csv")
+
+## Glimpses into data.
+glimpse(lobster_traps)
+head(lobster_traps)
+colnames(lobster_traps)
+summary(lobster_traps)
 ```
 
-You can add options to executable code like this 
-
+### Converting missing values using `mutate()` and `na_if()`.
 ```{r}
-#| echo: false
-2 * 2
+unique(lobster_traps$TRAPS)
+lobster_traps_conv <- lobster_traps %>%
+  mutate(TRAPS = na_if(TRAPS, -99999))
+unique(lobster_traps_conv$TRAPS)
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+### Practicing `filter()`.
+```{r}
+lobster_traps_notnapl <- lobster_traps_conv %>%
+  filter(SITE != "NAPL")
+
+lobster_traps_carptrap <- lobster_traps_conv %>%
+  filter(SITE == "CARP" | TRAPS > 20)
+```
+
